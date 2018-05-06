@@ -18,6 +18,82 @@
  	<link rel="stylesheet" type="text/css" href="style.css"> 
 </head>
 <body>
+    
+        
+     
+<script type="text/javascript"> 
+    var dayarray=new Array("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")
+    var montharray=new Array("January","February","March","April","May","June","July","August","September","October","November","December")
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"
+    function getthedate()
+    {
+        var mydate=new Date()
+        var year=mydate.getYear()
+        if (year < 1000)
+            year+=1900
+        var day=mydate.getDay()
+        var month=mydate.getMonth()
+        var daym=mydate.getDate()
+        if (daym<10)
+            daym="0"+daym
+        var hours=mydate.getHours()
+        var minutes=mydate.getMinutes()
+        var seconds=mydate.getSeconds()
+        var dn="AM"
+        if (hours>=12)
+            dn="PM"
+        if (hours>12)
+        {
+            hours=hours-12
+        }
+        if (hours==0)
+        hours=12
+        if (minutes<=9)
+            minutes="0"+minutes
+        if (seconds<=9)
+            seconds="0"+seconds
+
+        var cdate="<small><font class='link'><b>"+dayarray[day]+", "+montharray[month]+" "+daym+", "+year+" "+hours+":"+minutes+":"+seconds+" "+dn
+                    +"</b></font></small>"
+
+        if (document.all)
+            document.all.clock.innerHTML=cdate
+        else if (document.getElementById)
+            document.getElementById("clock").innerHTML=cdate
+        else
+            document.write(cdate)
+    }
+    if (!document.all&&!document.getElementById)
+    getthedate()
+    function goforit()
+    {
+        if (document.all||document.getElementById)
+        setInterval("getthedate()",1000)
+    }
+    
+   function valthisform(){
+ var chkd = document.attn.present.checked || document.attn.absent.checked
+
+ if (chkd == true){
+
+ } else {
+    alert ("please check a checkbox")
+ }
+
+}
+
+</script>
+   
+    
+    
+<span id="clock"  >
+ <small>
+     <font class='link' >  
+       <script> goforit();</script>
+     </font>
+ </small>
+</span>
+        
 
 <div class="header">
 	<h2>Student Feedback</h2>
@@ -45,6 +121,7 @@
     <?php endif ?>
         <?php
         $date = date('d/m/Y');
+        $sub="";
         $db = mysqli_connect('localhost', 'root', '');
         mysqli_select_db($db,'registration'); 
         ?>
@@ -52,8 +129,8 @@
         
          <form form method='post' name="feedback" id="feedback" action="#">
              
-         <select name="sub" style=" width: 210px; margin: 10px; font-size: 100%;">
-             <option value="" disabled selected>Select Subject </option>
+         <select name="subject" style=" width: 210px; margin: 10px; font-size: 100%;">
+             <option disabled selected>Select Subject </option>
             <option value="cbnst" >CBNST</option>
             <option value="automata">Automata</option>
             <option value="micro">Microprocessors</option>
@@ -66,32 +143,29 @@
           <textarea name="feedback" form="feedback" placeholder="Enter feedback here..." style="width: 550px ; height: 200px ; margin-top: 20px ;font-size: 100%;"></textarea>
              <button type='submit' class="btn" value="submit" form="feedback" name="submit" style="margin-top: 20px;" >submit</button>
             <?php
-            $sub=" ";  
+           
            $errors = array(); 
             
            if (isset($_POST['submit'])) {
               
-                $sub = mysqli_real_escape_string($db,$_POST['sub']);
-                if (empty($sub)) { array_push($errors, "Subject is required"); include('errors.php');}
-                    //include('errors.php');
+                $sub = mysqli_real_escape_string($db,$_POST['subject']);
+                if (empty($sub)) { array_push($errors, "Subject is required"); }
+                    $text = mysqli_real_escape_string($db,$_POST['feedback']);
+                     if (empty($text)) { array_push($errors, "Feedback is required"); }
+                     include('errors.php');
                     $sql = "SELECT `id` FROM `$sub` WHERE (name = '$username')";
-                if($sub){
+                if($sub != ""){
                      $retval = mysqli_query($db , $sql );
                     if(! $retval )
                      {
                         die('Could not get data: ' . mysqli_error());
                      }
+                     
                     while($row = mysqli_fetch_array($retval, MYSQLI_ASSOC)) 
                     {
                      $id=$row['id'];
                      //echo "id :{$row['id']}  <br> " ;
                     }
-                
-                
-                     $text = mysqli_real_escape_string($db,$_POST['feedback']);
-                     //if (empty($sub)) { array_push($errors, "Subject is required"); }
-                     if (empty($text)) { array_push($errors, "Feedback is required"); }
-                     include('errors.php');
                      //echo"$text";
                      //$feed="INSERT INTO $sub WHERE name VALUES ('$text')";
                      //$feed="UPDATE `$sub` SET `feedback` = '$text' WHERE `$sub`.'name' = $username;";

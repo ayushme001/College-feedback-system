@@ -153,7 +153,7 @@
                     <table width='100%' border='0' cellpadding='0' cellspacing='0' class="data-table">
                         
                             <tr>
-                                <th   class='data-table' style=" width: 130px; text-align: center;"> Students</td>
+                                <th   class='data-table' style=" width: 160px; text-align: center;">Select Student</td>
                                 <th   class='data-table' align="center">Feedback </td>
                             </tr>
                         
@@ -166,6 +166,7 @@
     
     $id    = "";
     $name   = "";
+    $id1 = "";
     $errors = array(); 
     mysqli_select_db($db,'registration'); 
         $sql = "SELECT * FROM student_database  ";
@@ -175,7 +176,7 @@
             die('Could not get data: ' . mysqli_error());
          }
        
-    echo"<form method='post'  class='input-group' action='index1.php' id='feed'>";
+    echo"<form method='post'  class='input-group' action='index3.php' id='feed'>";
     
             
                 
@@ -184,7 +185,21 @@
         {
             $id=$row['id'];
             echo"<tr>";
-            echo"<td  height='50' name='id' class='data-table' style='text-align: center;'; value=''>Student $c</td>" ;         
+            echo"<td  height='50' name='id' class='data-table' style='text-align: center;'; value=''>";
+            
+                 echo"<label class='container'>
+                    <input type='radio' name = 'student' value='$c' >
+                            Student $c
+                         <span class='checkmark'></span>
+                  </label>" ;   
+                    if (isset($_POST['student'])) {
+                    $id1=$_POST['student'];
+                    //echo"$id1";
+                    }
+                    echo"</td>" ; 
+            
+                    
+                    
             echo "<td  height='50' name='name' style='text-align: left;' class='data-table' value=''>";
             
             
@@ -209,8 +224,10 @@
             
              $c++;
         }
-        
+        //echo"$id1";
         echo"</table>";
+        echo"<textarea name='report'  placeholder='Enter Report here...' style='width: 550px ; height: 200px ; margin-top: 20px ;font-size: 100%;'></textarea>
+             <button type='submit' name='submit' class='btn' style='margin-top: 20px; font-size: 20px;'>Report</button>";
      echo"</form>";
      //echo"<button type='submit' class='btn' style='margin-top: 20px;'form='feed'>Submit</button> ";
     ?>
@@ -220,26 +237,31 @@
               //echo "hi";
             $text = mysqli_real_escape_string($db,$_POST['report']); 
             //echo"$text";
-             if (empty($text)) { array_push($errors, "Enter Text First"); }
+             if (empty($text)) { array_push($errors, "Enter Text "); }
+                     
+                 if (empty($id1)) { array_push($errors, "Select student"); }
                      include('errors.php'); 
-                 
+              // echo"$id1";
                
-                $report="UPDATE `$subject` SET `report` = '$text' WHERE `$subject`.`id` = 2;";
+                if($id1 != ""){
+                   
+            // if (isset($_POST['student'])) {
+              //  $id=$_POST['student'];
+                //$id1=$row['id'];
+                //$name1=$row['name'];
+                
+                //$sub="INSERT INTO `$subject` (`subject`, `id`, `name`, `$date`) VALUES ('$subject', '$id1', '$name1', '$attnd');";
+                $report="UPDATE `$subject` SET `report` = '$text' WHERE `$subject`.`id` = $id1;";
                 $rett = mysqli_query($db , $report );
                 if(!$rett)
                      {
                           die ('Error updating database' . mysqli_error());
                      }
                 }
-           
+            }
+          //}
         ?>                    
     
-                            
-<form name="report" id="report" action="#" class='input-group' method='post'>
-    <textarea name="report"  placeholder="Enter Report here..." style="width: 550px ; height: 200px ; margin-top: 20px ;font-size: 100%;"></textarea>
-    <button type="submit" name="submit" class="btn" style="margin-top: 20px; font-size: 20px;">Report</button>
-   
-</form>
 
          
                         
